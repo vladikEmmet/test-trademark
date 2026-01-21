@@ -1,9 +1,12 @@
-import { useVirtualizer } from "@tanstack/react-virtual";
+import { useVirtualizer, type Virtualizer } from "@tanstack/react-virtual";
 
-export function useMessageVirtualizer(count: number, ref: any) {
-  return useVirtualizer({
+export function useMessageVirtualizer(
+  count: number,
+  scrollRef: React.RefObject<HTMLDivElement>
+): Virtualizer<HTMLDivElement, Element> {
+  return useVirtualizer<HTMLDivElement, HTMLDivElement>({
     count,
-    getScrollElement: () => ref.current,
+    getScrollElement: () => scrollRef.current,
     estimateSize: () => 200,
     overscan: 5,
   });

@@ -7,7 +7,7 @@ export function createStreamController() {
   const messageId = crypto.randomUUID();
   store.append({ id: messageId, role: "agent", content: "" });
 
-  store.setIsGenerating(true); // ✅ правильно для Zustand
+  store.setIsGenerating(true);
 
   const buffer = new StreamBuffer((text) => store.updateLast(text));
 
@@ -19,7 +19,7 @@ export function createStreamController() {
     if (intervalId) {
       clearInterval(intervalId);
       intervalId = null;
-      store.setIsGenerating(false); // ✅ корректно для Zustand
+      store.setIsGenerating(false);
     }
   };
 

@@ -1,10 +1,5 @@
 import { create } from "zustand";
-
-interface Message {
-  id: string;
-  role: "user" | "agent";
-  content: string;
-}
+import type { Message } from "../types/chat.types";
 
 interface ChatState {
   messages: Message[];
@@ -14,7 +9,7 @@ interface ChatState {
   setIsGenerating: (value: boolean) => void;
 }
 
-export const useChatStore = create<ChatState>((set, get) => ({
+export const useChatStore = create<ChatState>((set) => ({
   messages: [],
   isGenerating: false,
   append: (msg) => set((state) => ({ messages: [...state.messages, msg] })),
