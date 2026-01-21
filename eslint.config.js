@@ -8,7 +8,7 @@ export default defineConfig([
       globals: globals.browser,
     },
     rules: {
-      "@typescript-eslint/no-explicit-any": "off", // <-- отключаем ошибки на any
+      "@typescript-eslint/no-explicit-any": "off",
     },
   },
 ]);

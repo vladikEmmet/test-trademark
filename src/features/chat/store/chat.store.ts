@@ -1,35 +1,29 @@
 import { create } from "zustand";
-import type { Message } from "../types/chat.types";
 
-type ChatStore = {
+interface Message {
+  id: string;
+  role: "user" | "agent";
+  content: string;
+}
+
+interface ChatState {
   messages: Message[];
   isGenerating: boolean;
-  append: (m: Message) => void;
-  updateLast: (content: string) => void;
-  stop: () => void;
-};
+  append: (msg: Message) => void;
+  updateLast: (text: string) => void;
+  setIsGenerating: (value: boolean) => void;
+}
 
-export const useChatStore = create<ChatStore>((set) => ({
+export const useChatStore = create<ChatState>((set, get) => ({
   messages: [],
   isGenerating: false,
-
-  append: (m) => set((s) => ({ messages: [...s.messages, m] })),
-
-  updateLast: (content) =>
-    set((s) => {
-      const idx = s.messages.length - 1;
-      if (idx < 0) return s;
-
-      const updated = {
-        ...s.messages[idx],
-        content,
-      };
-
-      const next = s.messages.slice();
-      next[idx] = updated;
-
-      return { messages: next };
+  append: (msg) => set((state) => ({ messages: [...state.messages, msg] })),
+  updateLast: (text) =>
+    set((state) => {
+      const messages = [...state.messages];
+      const last = messages[messages.length - 1];
+      if (last) last.content = text;
+      return { messages };
     }),
-
-  stop: () => set({ isGenerating: false }),
+  setIsGenerating: (value) => set({ isGenerating: value }),
 }));

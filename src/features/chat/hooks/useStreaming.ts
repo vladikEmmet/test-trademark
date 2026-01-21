@@ -10,10 +10,8 @@ export function useStreaming() {
       id: nanoid(),
       role: "agent",
       content: "",
-      streaming: true,
     });
 
-    // ❗ ВАЖНО: вернуть stop
     return createStreamController();
   };
 

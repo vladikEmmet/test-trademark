@@ -1,10 +1,14 @@
-export function generateText(onChunk: (c: string) => void) {
+export function generateText(
+  onChunk: (c: string) => void,
+  onDone?: () => void
+): () => void {
   let count = 0;
   const max = 10_000;
 
   const id = setInterval(() => {
     if (count > max) {
       clearInterval(id);
+      onDone?.();
       return;
     }
 
@@ -13,5 +17,10 @@ export function generateText(onChunk: (c: string) => void) {
     onChunk(chunk);
   }, 10);
 
-  return () => clearInterval(id);
+  const stopFn = () => {
+    clearInterval(id);
+    onDone?.();
+  };
+
+  return stopFn;
 }
