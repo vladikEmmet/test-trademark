@@ -1,73 +1,112 @@
-# React + TypeScript + Vite
+# High-Performance AI Chat Interface
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Project**: SPA simulating an AI chat interface (LLM platform) with high-volume text handling and streaming responses without UI blocking.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- **Message Virtualization**: Using `@tanstack/react-virtual` to efficiently render hundreds or thousands of messages without lag.
+- **Streaming Text Generation**: Simulates high-speed chunked text generation for assistant messages.
+- **Markdown Support**: Code blocks, bold text, and basic Markdown rendered via a Web Worker.
+- **Smart Auto-Scroll**: Scrolls to the latest message automatically unless the user scrolls up.
+- **Stop Generation**: Ability to stop assistant text generation at any time.
+- **Zero UI Freezes**: Smooth UI even with very large messages (>5MB).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Core**: React 18+, TypeScript
+- **State Management**: Zustand
+- **Virtualization**: `@tanstack/react-virtual`
+- **Styling**: Tailwind CSS
+- **Build Tool**: Vite
+- **Markdown Parsing**: `marked` via Web Worker
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Project Structure
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+src/
+├─ components/
+│ ├─ ChatInput.tsx # Input component for sending messages & generating responses
+│ ├─ MessageList.tsx # Chat message list with virtualization
+│ ├─ MessageRow.tsx # Individual message row
+│ ├─ MessageMarkdown.tsx # Markdown rendering for messages
+├─ hooks/
+│ ├─ useStreaming.ts # Streaming text generation logic
+│ ├─ useStopGeneration.ts # Hook to stop text generation
+│ ├─ useMessageVirtualizer.ts # Message virtualization hook
+│ ├─ useAutoScroll.ts # Auto-scroll hook
+├─ store/
+│ ├─ chat.store.ts # Zustand chat store
+│ ├─ chat.selectors.ts # Message selectors
+├─ markdown/
+│ ├─ markdown.worker.ts # Worker for parsing Markdown
+│ ├─ markdown.service.ts # Service to send text to worker
+│ ├─ markdown.cache.ts # Cache for parsed Markdown
+├─ utils/
+│ ├─ nanoid.ts # Unique ID generator
+├─ generator/
+│ ├─ generator.ts # Streaming Lorem Ipsum text generator
+│ ├─ stream.buffer.ts # Buffer for streaming text chunks
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Installation
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone <repo-url>
+cd <project-folder>
+npm install
+npm run dev
+
+## Usage
+
+### Sending a Message
+
+1. Type a message in the input field.
+2. Click the **ArrowUp** button → the message is sent as user input.
+3. Assistant starts generating a response in streaming mode.
+4. Click the **X** button to stop generation at any time.
+
+### Virtualized Chat
+
+- The message list is fully virtualized using `@tanstack/react-virtual`.
+- Supports hundreds or thousands of messages without lag.
+- Handles very long messages (3–5k tokens each).
+
+### Markdown Rendering
+
+- Messages support **Markdown**: code blocks, bold, italic, etc.
+- Parsing is offloaded to a **Web Worker** to avoid blocking the main thread.
+- Parsed results are cached for faster re-rendering.
+
+### Auto-Scroll
+
+- Chat automatically scrolls to the latest message.
+- Auto-scroll pauses if the user scrolls up to read previous messages.
+- Auto-scroll resumes when the user scrolls near the bottom.
+
+---
+
+## Key Components
+
+- **ChatInput**: Handles user input and triggers streaming text generation.
+- **MessageList**: Virtualized container for chat messages.
+- **MessageMarkdown**: Safely renders Markdown content using a worker.
+- **useStreaming**: Hook for streaming text generation.
+- **useStopGeneration**: Hook to stop streaming.
+- **useMessageVirtualizer**: Hook for message virtualization.
+- **useAutoScroll**: Hook for smart auto-scrolling behavior.
+
+---
+
+## Notes
+
+- Designed for **high-performance chat applications**.
+- Can handle **very large message histories** (>5MB).
+- Fully responsive and optimized for React 18+.
+- Scales for long text messages and multiple concurrent streams.
 ```
