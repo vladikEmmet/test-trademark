@@ -1,18 +1,27 @@
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { useMessageVirtualizer } from "../hooks/useMessageVirtualizer";
 import { selectMessages } from "../store/chat.selectors";
 import { useChatStore } from "../store/chat.store";
 import { MessageMarkdown } from "./MessageMarkdown";
+import { useAutoScroll } from "../hooks/useAutoScroll";
 
 export function MessageList() {
   const messages = useChatStore(selectMessages);
   const ref = useRef<HTMLDivElement>(null);
   const v = useMessageVirtualizer(messages.length, ref);
 
+  const scrollDeps = useMemo(() => {
+    const lastMessage = messages[messages.length - 1];
+    return lastMessage ? lastMessage.content : "";
+  }, [messages]);
+
+  const { onScroll } = useAutoScroll(ref, [scrollDeps]);
+
   return (
     <div
       ref={ref}
       className="flex-1 overflow-auto h-175 border border-gray-300"
+      onScroll={onScroll}
     >
       <div style={{ height: v.getTotalSize(), position: "relative" }}>
         {v.getVirtualItems().map((row) => {
